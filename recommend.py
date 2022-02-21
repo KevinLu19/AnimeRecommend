@@ -2,6 +2,7 @@ from lib2to3.pgen2.pgen import generate_grammar
 import requests
 from mal import *
 from mal import AnimeSearch
+import time
 
 # Jikan API Restrictions:
 # - 60 requests per minute
@@ -14,7 +15,9 @@ class AnimeRecommend:
         self.anime_id = user_anime_id
         self.anime_genre = user_genre
         self.anime_score_threshold = 8      # Filters anime by their MAL score.
- 
+    
+    # Heart and soul of the class. 
+    # Takes in any parameter that is needed to make Anime search funciton possible according to the API documentation.
     def request_to_API(self, **kwargs):
         re = requests.get(BASE_MY_ANIME_LIST_URL + str(*kwargs.values()))
         # print (kwargs)
@@ -27,10 +30,25 @@ class AnimeRecommend:
  
         result = self.request_to_API(api_query = query_string)
 
-        for item in result["data"]:
-            print (item["title"])
+        for anime in result["data"]:
+            print ("=============================")
+            print ("Title: " , anime["title"])
+            print ("Score: ", anime["score"])
+            print ("Type: ", anime["type"])         
+            print ("Theme: ", [theme["name"] for theme in anime["themes"]])               # Returns back a list. Can return back nothing.
+            print ("Demographic: ", [demog["name"] for demog in anime["demographics"]])   # Returns back a list. Can return back nothing.
+            print ("Episodes: ", anime["episodes"])
+            print ("MAL URL: ", anime["url"])
+            print ("\n")
+            print ("Synopsis: ", anime["synopsis"])
+            print ("=============================")
+            time.sleep(5)
+            # print (anime)
 
+    def parse_list_to_print(self, item_list):
+        pass
 
+    # This function is search a specific anime and return the genre.
     def get_anime_genre(self):
         # URL Layout for genre: https://api.jikan.moe/v4/anime/48736
         full_query_command = f"/anime/{self.anime_id}"
@@ -58,6 +76,8 @@ def main():
 30 - Sport       | 36 - Slice - of - Life 
 37 - Supernatural| 41 - Suspense 
 47 - Gourmet 
+
+    If you want to add more than one genre, separate them using a comma(,)
 """
     print (genre_numeric_id)
 
@@ -67,7 +87,6 @@ def main():
     anime_id = AnimeSearch(user_requested_anime).results[0].mal_id
     anime_reco = AnimeRecommend(anime_id, user_given_genre)
 
-    # anime_reco.get_anime_genre()
     anime_reco.get_anime_query()
     
 main()
