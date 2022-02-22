@@ -14,10 +14,6 @@ class AnimeRecommend:
     def __init__(self, **kwargs):
         # print (kwargs)
         self.anime_id = kwargs["user_anime_id"]
-
-        if kwargs["user_genre"]:
-            self.anime_genre = kwargs["user_genre"]         # Holds a string
-
         self.anime_score_threshold = 8                  # Filters anime by their MAL score.
     
     # Heart and soul of the class. 
@@ -29,10 +25,20 @@ class AnimeRecommend:
         return re.json()
     
     # Takes query string and passes through API to which this function will print out useful information. 
-    def get_anime_query(self):
-        # genres=22&score=8&order_by=popularity
-        query_string = f"/anime?genres={self.anime_genre}&min_score={self.anime_score_threshold}&order_by=asc"
+    def get_anime_query(self, genre_list):
+        # Convert genre_list to a string in order to comma separate it if list is > 1.
+        if len(genre_list) > 1:
+            convert_to_str = list(map(str, genre_list))
+            joinned_string = ",".join(convert_to_str)
+            
+            # genres=22&score=8&order_by=popularity
+            query_string = f"/anime?genres={joinned_string}&min_score={self.anime_score_threshold}&order_by=asc"
  
+        else: 
+            # genres=22&score=8&order_by=popularity
+            query_string = f"/anime?genres={genre_list[0]}&min_score={self.anime_score_threshold}&order_by=asc"
+ 
+        
         result = self.request_to_API(api_query = query_string)
 
         for anime in result["data"]:
@@ -62,7 +68,8 @@ class AnimeRecommend:
         anime_genre_list = []
 
         for genre in results["data"]["genres"]:
-            anime_genre_list.append(genre["name"])
+            anime_genre_list.append(genre["mal_id"])
+           # anime_genre_list.append(genre["name"])
 
         print("Genre: ", anime_genre_list)
 
@@ -72,6 +79,9 @@ class AnimeRecommend:
         for demographic in results["data"]["demographics"]:
             print ("Demographic: ", demographic["name"])
 
+        self.get_anime_query(anime_genre_list)
+
+    # /anime?genres=22&score=8&order_by=popularity
 
 def main():
 #     GENRE = "genre"
