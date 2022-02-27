@@ -12,8 +12,11 @@ BASE_MY_ANIME_LIST_URL = "https://api.jikan.moe/v4"
 class AnimeRecommend:
     def __init__(self, **kwargs):
         # print (kwargs)
-        self.anime_id = kwargs["user_anime_id"]
+        # self.anime_id = kwargs["user_anime_id"]
         self.anime_score_threshold = 8                  # Filters anime by their MAL score.
+
+        if kwargs:
+            self.anime_id = kwargs["user_anime_id"]
     
     # Heart and soul of the class. 
     # Takes in any parameter that is needed to make Anime search funciton possible according to the API documentation.
@@ -31,11 +34,12 @@ class AnimeRecommend:
             joinned_string = ",".join(convert_to_str)
             
             # genres=22&score=8&order_by=popularity
-            query_string = f"/anime?genres={joinned_string}&min_score={self.anime_score_threshold}&order_by=asc"
+            # https://api.jikan.moe/v4/anime?genres=22&min_score=8&order_by=rank&sort=asc
+            query_string = f"/anime?genres={joinned_string}&min_score={self.anime_score_threshold}&order_by=rank&sort=asc"
  
         else: 
             # genres=22&score=8&order_by=popularity
-            query_string = f"/anime?genres={genre_list[0]}&min_score={self.anime_score_threshold}&order_by=asc"
+            query_string = f"/anime?genres={genre_list[0]}&min_score={self.anime_score_threshold}&order_by=rank&sort=asc"
  
         
         result = self.request_to_API(api_query = query_string)
@@ -44,7 +48,8 @@ class AnimeRecommend:
             print ("=============================")
             print ("Title: " , anime["title"])
             print ("Score: ", anime["score"])
-            print ("Type: ", anime["type"])         
+            print ("Type: ", anime["type"])
+            print ("Genre: ", [genres["name"] for genres in anime["genres"]] )         
             print ("Theme: ", [theme["name"] for theme in anime["themes"]])               # Returns back a list. Can return back nothing.
             print ("Demographic: ", [demog["name"] for demog in anime["demographics"]])   # Returns back a list. Can return back nothing.
             print ("Episodes: ", anime["episodes"])
@@ -85,9 +90,44 @@ class AnimeRecommend:
 
 
 def main():
-    user_requested_anime = input("Enter Anime: ")
-    anime_id = AnimeSearch(user_requested_anime).results[0].mal_id
-    anime_reco = AnimeRecommend(user_anime_id = anime_id, user_genre = 11)
-    anime_reco.serach_user_entered_anime()
+    GENRE = "genre"
+    choice_prompt = input("Enter in Genre or Anime: ")
+
+    # user_requested_anime = "Sono Bisque doll wa koi wo suru"
+    genre_numeric_id = """
+1 - Action       | 2 - Adventure 
+4 - Comedy       | 7 - Mystery 
+8 - Drama        | 9 - Ecchi 
+10 - Fantasy     | 14 - Horror 
+22 - Romance     | 24 - Sci-Fi 
+30 - Sport       | 36 - Slice - of - Life 
+37 - Supernatural| 41 - Suspense 
+47 - Gourmet 
+
+   **Note: If you want to add more than one genre, separate them using a comma(,)
+"""
+    # Can't search by Genre since it requires anime_id in order to do so.
+    if choice_prompt.upper() == GENRE.upper():
+        # user types in genre
+        print (genre_numeric_id)
+
+        user_requested_genre_id = input("Enter your genre using , as delimiter for multiple: ")
+        new_requested_genre_id = user_requested_genre_id.replace(" ", "")
+
+        anime_reco = AnimeRecommend()
+        anime_reco.get_anime_query([new_requested_genre_id])
+
+        print (new_requested_genre_id)
+
+    else:
+        user_requested_anime = input("Enter Anime: ")
+        anime_id = AnimeSearch(user_requested_anime).results[0].mal_id
+        anime_reco = AnimeRecommend(user_anime_id = anime_id)
+        anime_reco.serach_user_entered_anime()  
+    
+    # user_requested_anime = input("Enter Anime: ")
+    # anime_id = AnimeSearch(user_requested_anime).results[0].mal_id
+    # anime_reco = AnimeRecommend(user_anime_id = anime_id)
+    # anime_reco.serach_user_entered_anime()
 
 main()
