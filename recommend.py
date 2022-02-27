@@ -1,4 +1,3 @@
-from lib2to3.pgen2.pgen import generate_grammar
 import requests
 from mal import *
 from mal import AnimeSearch
@@ -82,7 +81,6 @@ class AnimeRecommend:
         for demographic in results["data"]["demographics"]:
             print ("Demographic: ", demographic["name"])
 
-        
         self.get_anime_query(anime_genre_list)
 
 
