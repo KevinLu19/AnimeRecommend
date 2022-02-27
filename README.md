@@ -29,4 +29,8 @@ Either clone or download the repo
 2. Enter in Anime that you wish to be recommended. 
 
 ## Screenshots
+**Searching Anime Name** <br />
 <img src="https://raw.githubusercontent.com/KevinLu19/AnimeRecommend/master/screenshots/shot1.PNG" width=50% height=50%>
+
+**Searching Genre** <br />
+<img src="https://raw.githubusercontent.com/KevinLu19/AnimeRecommend/master/screenshots/shot2.PNG" width = 50% height=50%>
